@@ -1,78 +1,107 @@
-CREATE TABLE Usuarios (
-  PessoaID INTEGER  NOT NULL  ,
-  UsuarioID INTEGER  NOT NULL   IDENTITY ,
-  Login VARCHAR(20)    ,
-  Senha VARCHAR(20)      ,
-PRIMARY KEY(PessoaID, UsuarioID));
-GO
-
-
-
-
-CREATE TABLE Produtos (
-  ProdutoID INTEGER  NOT NULL   IDENTITY ,
-  Nome VARCHAR(255)    ,
-  Quantidade INTEGER    ,
-  PrecoVenda DECIMAL(10, 2)    ,
-  PessoaID INTEGER      ,
-PRIMARY KEY(ProdutoID));
-GO
-
-
-
-
-CREATE TABLE PessoaFisica (
-  idPessoaFisica INTEGER  NOT NULL   IDENTITY ,
-  CPF VARCHAR(20)      ,
-PRIMARY KEY(idPessoaFisica));
-GO
-
-
-
-
-CREATE TABLE PessoaJuridica (
-  idPessoaJuridica INTEGER  NOT NULL   IDENTITY ,
-  CNPJ VARCHAR(20)      ,
-PRIMARY KEY(idPessoaJuridica));
-GO
-
-
+CREATE DATABASE Loja ON loja 
+GO 
 
 
 CREATE TABLE Pessoas (
-  PessoaID INTEGER  NOT NULL   IDENTITY ,
-  Usuarios_UsuarioID INTEGER  NOT NULL  ,
-  Usuarios_PessoaID INTEGER  NOT NULL  ,
-  PessoaJuridica_idPessoaJuridica INTEGER  NOT NULL  ,
-  PessoaFisica_idPessoaFisica INTEGER  NOT NULL  ,
+  idpessoa INTEGER  NOT NULL   IDENTITY ,
   Nome VARCHAR(255)    ,
-  TipoPessoa ENUM   DEFAULT ('Fisica', 'Juridica') ,
-  CPF VARCHAR(20)    ,
+  Cidade VARCHAR(20)    ,
+  Celular VARCHAR(11)      ,
+PRIMARY KEY(idpessoa));
+GO
+
+
+
+
+CREATE TABLE Produto (
+  idProduto INTEGER  NOT NULL   IDENTITY ,
+  Nome VARCHAR(255)    ,
+  Quantidade INTEGER    ,
+  PrecoVenda NUMERIC(10,2)      ,
+PRIMARY KEY(idProduto));
+GO
+
+
+
+
+CREATE TABLE Usuarios (
+  usuariosid INTEGER  NOT NULL   IDENTITY ,
+  Login VARCHAR(20)    ,
+  Senha VARCHAR(20)      ,
+PRIMARY KEY(usuariosid));
+GO
+
+
+
+
+CREATE TABLE pessoafisica (
+  id_pessoafisica INTEGER  NOT NULL   IDENTITY ,
+  Pessoas_idpessoa INTEGER  NOT NULL  ,
+  CPF VARCHAR(20)      ,
+PRIMARY KEY(id_pessoafisica)  ,
+  FOREIGN KEY(Pessoas_idpessoa)
+    REFERENCES Pessoas(idpessoa));
+GO
+
+
+CREATE INDEX pessoafisica_FKIndex1 ON pessoafisica (Pessoas_idpessoa);
+GO
+
+
+CREATE INDEX IFK_Rel_04 ON pessoafisica (Pessoas_idpessoa);
+GO
+
+
+CREATE TABLE pessoajuridica (
+  id_pessoajuridica INTEGER  NOT NULL   IDENTITY ,
+  pessoa_idpessoa INTEGER  NOT NULL  ,
+  Pessoas_idpessoa INTEGER  NOT NULL  ,
   CNPJ VARCHAR(20)      ,
-PRIMARY KEY(PessoaID, Usuarios_UsuarioID, Usuarios_PessoaID)      ,
-  FOREIGN KEY(Usuarios_PessoaID, Usuarios_UsuarioID)
-    REFERENCES Usuarios(PessoaID, UsuarioID),
-  FOREIGN KEY(PessoaFisica_idPessoaFisica)
-    REFERENCES PessoaFisica(idPessoaFisica),
-  FOREIGN KEY(PessoaJuridica_idPessoaJuridica)
-    REFERENCES PessoaJuridica(idPessoaJuridica));
+PRIMARY KEY(id_pessoajuridica, pessoa_idpessoa)  ,
+  FOREIGN KEY(Pessoas_idpessoa)
+    REFERENCES Pessoas(idpessoa));
 GO
 
 
-CREATE INDEX Pessoas_FKIndex1 ON Pessoas (Usuarios_PessoaID, Usuarios_UsuarioID);
-GO
-CREATE INDEX Pessoas_FKIndex2 ON Pessoas (PessoaFisica_idPessoaFisica);
-GO
-CREATE INDEX Pessoas_FKIndex3 ON Pessoas (PessoaJuridica_idPessoaJuridica);
+CREATE INDEX pessoajuridica_FKIndex1 ON pessoajuridica (Pessoas_idpessoa);
 GO
 
 
-CREATE INDEX IFK_Rel_01 ON Pessoas (Usuarios_PessoaID, Usuarios_UsuarioID);
-GO
-CREATE INDEX IFK_Rel_03 ON Pessoas (PessoaFisica_idPessoaFisica);
-GO
-CREATE INDEX IFK_Rel_04 ON Pessoas (PessoaJuridica_idPessoaJuridica);
+CREATE INDEX IFK_Rel_05 ON pessoajuridica (Pessoas_idpessoa);
 GO
 
+
+CREATE TABLE movimento (
+  idmovimento INTEGER  NOT NULL   IDENTITY ,
+  Produto_idProduto INTEGER  NOT NULL  ,
+  Usuarios_usuariosid INTEGER  NOT NULL  ,
+  Pessoas_idpessoa INTEGER  NOT NULL  ,
+  Quantidade INTEGER    ,
+  Tipo VARCHAR(1)    ,
+  Valor NUMERIC(10,2)      ,
+PRIMARY KEY(idmovimento)      ,
+  FOREIGN KEY(Pessoas_idpessoa)
+    REFERENCES Pessoas(idpessoa),
+  FOREIGN KEY(Usuarios_usuariosid)
+    REFERENCES Usuarios(usuariosid),
+  FOREIGN KEY(Produto_idProduto)
+    REFERENCES Produto(idProduto));
+GO
+
+
+CREATE INDEX movimento_FKIndex1 ON movimento (Pessoas_idpessoa);
+GO
+CREATE INDEX movimento_FKIndex2 ON movimento (Usuarios_usuariosid);
+GO
+CREATE INDEX movimento_FKIndex3 ON movimento (Produto_idProduto);
+GO
+
+
+CREATE INDEX IFK_Rel_06 ON movimento (Pessoas_idpessoa);
+GO
+CREATE INDEX IFK_Rel_07 ON movimento (Usuarios_usuariosid);
+GO
+CREATE INDEX IFK_Rel_08 ON movimento (Produto_idProduto);
+GO
 
 
